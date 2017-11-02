@@ -3,7 +3,6 @@ package com.bbs;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,7 +89,7 @@ public class bbsDAO {
 		return result;
 	}
 	
-	public int updateBoard(bbsDTO dto, String id) {
+	public int updatebbs(bbsDTO dto, String id) {
 		int result = 0;
 		PreparedStatement pstmt = null;
 		String sql;
@@ -361,6 +360,7 @@ public class bbsDAO {
         return dto;
     }
     
+    //좋아요 하기.
     public int insertLikebbs(int num, String id) {
 		int result=0;
 		PreparedStatement pstmt = null;
@@ -399,6 +399,32 @@ public class bbsDAO {
 			System.out.println(e.toString());
 		} 
 		
+		return result;
+	}
+	
+	
+	public int deletebbs(int num, String id) {
+		int result = 0;
+		PreparedStatement pstmt = null;
+		String sql;
+		
+		try {
+			if(id.equals("admin")) {
+				sql="DELETE FROM bbs WHERE num=?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, num);
+				result = pstmt.executeUpdate();
+			}else {
+				sql="DELETE FROM bbs WHERE num=? AND id=?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, num);
+				pstmt.setString(2, id);
+				result = pstmt.executeUpdate();
+			}
+			
+		} catch (Exception e) {
+			System.out.println(e.toString());
+		} 
 		return result;
 	}
 	

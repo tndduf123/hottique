@@ -1,6 +1,7 @@
 package com.bbs;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Iterator;
@@ -15,6 +16,8 @@ import javax.servlet.http.HttpSession;
 import com.member.SessionInfo;
 import com.util.MyServlet;
 import com.util.MyUtil;
+
+import net.sf.json.JSONObject;
 @WebServlet("/bbs/*")
 public class bbsServlet extends MyServlet{
 	private static final long serialVersionUID = 1L;
@@ -43,17 +46,18 @@ public class bbsServlet extends MyServlet{
 		} else if(uri.indexOf("article.do")!=-1) {
 			article(req, resp);
 		} else if(uri.indexOf("update.do")!=-1) {
+			System.out.println("11");
 			updateForm(req, resp);
 		} else if(uri.indexOf("update_ok.do")!=-1) {
 			updateSubmit(req, resp);
 		} else if(uri.indexOf("delete.do")!=-1) {
 			delete(req, resp);
-		} else if(uri.indexOf("countLikeBoard.do")!=-1) {
+		} else if(uri.indexOf("countLikebbs.do")!=-1) {
 			// 게시물 공감 개수
-			countLikeBoard(req, resp);
-		} else if(uri.indexOf("insertLikeBoard.do")!=-1) {
+			countLikebbs(req, resp);
+		} else if(uri.indexOf("insertLikebbs.do")!=-1) {
 			// 게시물 공감 저장
-			insertLikeBoard(req, resp);
+			insertLikebbs(req, resp);
 		} else if(uri.indexOf("insertReply.do")!=-1) {
 			// 댓글 추가
 			insertReply(req, resp);
@@ -251,11 +255,11 @@ public class bbsServlet extends MyServlet{
 
 			HttpSession session = req.getSession();
 			SessionInfo info = (SessionInfo) session.getAttribute("member");
-
+			
 			bbsDAO dao = new bbsDAO();
-		
+			
 			String page=req.getParameter("page");
-			int num=Integer.parseInt(	req.getParameter("num"));
+			int num=Integer.parseInt(req.getParameter("num"));
 			bbsDTO dto=dao.readbbs(num);
 			
 			if(dto==null) {
@@ -272,24 +276,89 @@ public class bbsServlet extends MyServlet{
 			req.setAttribute("dto", dto);
 			req.setAttribute("page", page);
 			req.setAttribute("mode", "update");
-			
 			String path="/WEB-INF/views/bbs/created.jsp";
 			forward(req, resp, path);
 		}
 		private void updateSubmit(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 			
+			String cp = req.getContextPath();
+			bbsDAO dao = new bbsDAO();
+			HttpSession session=req.getSession();
+			SessionInfo info=(SessionInfo)session.getAttribute("member");
+		
+			String page=req.getParameter("page");
+			
+			if(req.getMethod().equalsIgnoreCase("GET")) {
+				resp.sendRedirect(cp+"/bbs/list.do?page="+page);
+				return;
+			}
+			
+			bbsDTO dto=new bbsDTO();
+			dto.setNum(Integer.parseInt(req.getParameter("num")));
+			dto.setSubject(req.getParameter("subject"));
+			dto.setContent(req.getParameter("content"));
+			
+			dao.updatebbs(dto, info.getId());
+			
+			resp.sendRedirect(cp+"/bbs/list.do?page="+page);
+			
+			
 		}
 		private void delete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			String cp = req.getContextPath();
+
+			HttpSession session = req.getSession();
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+
+			bbsDAO dao = new bbsDAO();
+		
+			String page=req.getParameter("page");
+			int num=Integer.parseInt(req.getParameter("num"));
 			
+			// bbsReply 테이블은 ON DELETE CASCADE 옵션으로 bbs 테이블의 데이터가 지워지면 자동 지워짐
+			dao.deletebbs(num, info.getId());
+			resp.sendRedirect(cp+"/bbs/list.do?page="+page);
 		}
-		private void countLikeBoard(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		private void countLikebbs(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			// 게시물 공감 개수
+			bbsDAO dao = new bbsDAO();
+			int num = Integer.parseInt(req.getParameter("num"));
 			
+			int countLikebbs=dao.countLikebbs(num);
+			JSONObject job=new JSONObject();
+			job.put("countLikebbs", countLikebbs);
+			
+			resp.setContentType("text/html;charset=utf-8");
+			PrintWriter out=resp.getWriter();
+			out.print(job.toString());
+		}
+		
+		private void insertLikebbs(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			// 게시물 공감 저장
+			HttpSession session=req.getSession();
+			SessionInfo info=(SessionInfo)session.getAttribute("member");
+			bbsDAO dao = new bbsDAO();
+			
+			String state="false";
+			if(info==null) {
+				state="loginFail";
+			} else {
+				int num = Integer.parseInt(req.getParameter("num"));
+
+				int result=dao.insertLikebbs(num, info.getId());
+				if(result==1)
+					state="true";
+			}
+			
+			JSONObject job=new JSONObject();
+			job.put("state", state);
+			
+			resp.setContentType("text/html;charset=utf-8");
+			PrintWriter out=resp.getWriter();
+			out.print(job.toString());
 		}
 		
 		private void listReply(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-			
-		}
-		private void insertLikeBoard(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 			
 		}
 		private void insertReply(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

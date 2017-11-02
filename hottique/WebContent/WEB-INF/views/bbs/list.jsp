@@ -41,15 +41,22 @@
       </div>
 	<!-- main start -->
       
-        <div style="width: 1140px; min-height: 500px; margin: 0px auto 0px;">
-       	<div class="body-title">
-            <h3><span style="font-family: Webdings">2</span> 게시판 </h3>
-        </div>
+        <div style="width: 1140px; min-height: 500px; margin: 0px auto 70px;">
+        <div class="list-title">
+				<h3 style="color: black;">
+					<span class="glyphicon glyphicon-pencil"></span>&nbsp;고객센터
+				</h3>
+		</div>
+		<div class="alert alert-info">
+				<i class="glyphicon glyphicon-info-sign"></i> 고객센터 게시판 입니다.
+		</div>
+		
+			
        	<div>
        		<table style="width: 100%; margin: 20px auto 0px; border-spacing: 0px;" >
        			<tr height="40">
        				<td align="left" width="50%">
-       					1개(1/1페이지)
+       					${dataCount}개(${page}/${total_page}페이지)
        				</td>
        				<td align="right">&nbsp;</td>
        			</tr>
@@ -74,9 +81,20 @@
 			      <td>${dto.created}</td>
 			      <td>${dto.hitCount}</td>
 			  </tr>
-			</c:forEach> 
-			  		
+			</c:forEach>
        		</table>
+       		<table style="width: 100%; margin: 0px auto; border-spacing: 0px;">
+			   <tr height="35">
+				<td align="center">
+			        <c:if test="${dataCount==0 }">
+			                등록된 게시물이 없습니다.
+			         </c:if>
+			        <c:if test="${dataCount!=0 }">
+			               ${paging}
+			         </c:if>
+				</td>
+			   </tr>
+			</table>
        		<table style="width: 100%; margin: 10px auto; border-spacing: 0px;">
 			   <tr height="40">
 			      <td align="left" width="100">
@@ -94,15 +112,13 @@
 			            <button type="button" class="btn" onclick="searchList()">검색</button>
 			        </form>
 			      </td>
-			      <td align="right" width="100">
-			          <button type="button" class="btn" onclick="javascript:location.href='<%=cp%>/bbs/created.do';">글올리기</button>
-			      </td>
-			   </tr>
+			      	<td align="right" width="100">
+			        	<button type="button" class="btn" onclick="javascript:location.href='<%=cp%>/bbs/created.do';">글올리기</button>
+			    	</td>
+				</tr>
 			</table>
-       		
-       	</div>
-       		
-        </div>
+    	</div>
+	</div>
         
  	<!-- main end -->
       <div>

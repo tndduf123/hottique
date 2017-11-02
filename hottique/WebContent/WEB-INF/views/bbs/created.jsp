@@ -72,7 +72,7 @@ function sendBoard() {
         <div style="width: 1140px; min-height: 500px; margin: 0px auto 0px;">
        		<div class="body-container" style="width: 700px;">
         <div class="body-title">
-            <h3><span style="font-family: Webdings">2</span> 게시판 </h3>
+            <h3><span style="font-family: Webdings">2</span> 고객센터 </h3>
         </div>
         
         <div>

@@ -12,6 +12,81 @@
 <head>
 <meta charset="utf-8">
 <title>Hottique</title>
+<script type="text/javascript">
+function updatebbs(num) {
+	<c:if test="${sessionScope.member.id==dto.id}">
+	    var page = "${page}";
+	    var query = "num="+num+"&page="+page;
+	    var url = "<%=cp%>/bbs/update.do?" + query;
+
+	    location.href=url;
+	</c:if>
+}
+
+function deletebbs(num) {
+	<c:if test="${sessionScope.member.id=='admin' || sessionScope.member.id==dto.id}">
+	    var page = "${page}";
+	    var query = "num="+num+"&page="+page;
+	    var url = "<%=cp%>/bbs/delete.do?" + query;
+
+	    if(confirm("위 자료를 삭제 하시 겠습니까 ? ")){
+	    	location.href=url;
+	    }
+	</c:if>
+
+	<c:if test="${sessionScope.member.id!='admin' && sessionScope.member.id!=dto.id}">
+	    alert("게시물을 삭제할 수  없습니다.");
+	</c:if>
+	
+}
+
+//게시물 공감 개수
+function countLikebbs(num) {
+	var url="<%=cp%>/bbs/countLikebbs.do";
+	$.post(url, {num:num}, function(data){
+		var count=data.countLikebbs;
+		
+		$("#countLikebbs").html(count);
+	}, "json");
+}
+
+function sendLikebbs(num) {
+	var uid="${sessionScope.member.id}";
+	if(! uid) {
+		login();
+		return;
+	}
+
+	msg="게시물에 공감하십니까 ?";
+	if(! confirm(msg))
+		return;
+	
+	var query="num="+num;
+
+	$.ajax({
+		type:"post"
+		,url:"<%=cp%>/bbs/insertLikebbs.do"
+		,data:query
+		,dataType:"json"
+		,success:function(data) {
+			var state=data.state;
+			if(state=="true") {
+				countLikebbs(num);
+			} else if(state=="false") {
+				alert("좋아요는 한번만 가능합니다. !!!");
+			} else if(state=="loginFail") {
+				login();
+			}
+		}
+		,error:function(e) {
+			console.log(e.responseText);
+		}
+	});
+}
+
+
+
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="description"
    content="Bootstrap 3 template for corporate business" />
@@ -32,20 +107,19 @@
 </head>
 
 <body>
-<body>
 
 
    <div id="wrapper">
       <div>
-      <jsp:include page="/WEB-INF/views/layout/header.jsp"></jsp:include>
+      	<jsp:include page="/WEB-INF/views/layout/header.jsp"></jsp:include>
       </div>
       	<!-- main start -->
       
       
-        <div style="width: 700px; min-height: 500px; margin: 0px auto 0px;">
+        <div style="width: 700px; min-height: 500px; margin: 0px auto 70px;">
        		
        		<div class="body-title">
-            <h3><span style="font-family: Webdings">2</span> 게시판 </h3>
+            <h3><span style="font-family: Webdings">2</span> 고객센터 </h3>
         </div>
         
         <div>
@@ -77,7 +151,9 @@
 			</tr>
 			<tr style="border-bottom: 1px solid #cccccc;">
 			  <td colspan="2" align="center" height="40" style="padding-bottom: 15px;">
-			       <button type='button' class='btnLike' onclick="sendLikeBoard('${dto.num}')">&nbsp;&nbsp;<span style="font-family: Wingdings;">C</span>&nbsp;&nbsp;<span id="countLikeBoard">${countLikebbs}</span></button>
+			       <button type='button' class='btnLike' style="background: #ffffff" onclick="sendLikebbs('${dto.num}')">&nbsp;&nbsp;
+			       <img alt="" src="<%=cp%>/resouces/img/like__.jpg" style="width: 50px;height: 30px;">&nbsp;&nbsp;${countLikebbs}
+			       </button>
 			   </td>
 			</tr>
 			
@@ -93,7 +169,7 @@
 			<tr height="35" style="border-bottom: 1px solid #cccccc;">
 			    <td colspan="2" align="left" style="padding-left: 5px;">
 			    다음글 :
-			         <c:if test="${not empty nextReadDto}">
+			        <c:if test="${not empty nextReadDto}">
 			              <a href="<%=cp%>/bbs/article.do?${query}&num=${nextReadDto.num}">${nextReadDto.subject}</a>
 			        </c:if>
 			    </td>
@@ -104,10 +180,10 @@
 			<tr height="45">
 			    <td width="300" align="left">
 			       <c:if test="${sessionScope.member.id==dto.id}">				    
-			          <button type="button" class="btn" onclick="updateBoard('${dto.num}');">수정</button>
+			          <button type="button" class="btn" onclick="updatebbs('${dto.num}');">수정</button>
 			       </c:if>
 			       <c:if test="${sessionScope.member.id==dto.id || sessionScope.member.id=='admin'}">				    
-			          <button type="button" class="btn" onclick="deleteBoard('${dto.num}');">삭제</button>
+			          <button type="button" class="btn" onclick="deletebbs('${dto.num}');">삭제</button>
 			       </c:if>
 			    </td>
 			
@@ -117,11 +193,8 @@
 			</tr>
 			</table>
         </div>
-       		 
-       		
-       		
-        </div>
-        
+      </div>
+       
         
 		<!-- main end -->
       <div>
@@ -148,6 +221,5 @@
    <script src="<%=cp%>/resouces/js/animate.js"></script>
    <script src="<%=cp%>/resouces/js/custom.js"></script>
 
-</body>
 </body>
 </html>
