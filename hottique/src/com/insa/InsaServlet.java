@@ -1,4 +1,4 @@
-package com.room;
+package com.insa;
 
 import java.io.IOException;
 
@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.util.MyServlet;
 
-@WebServlet("/room/*")
-public class RoomServlet extends MyServlet {
+@WebServlet("/insa/*")
+public class InsaServlet extends MyServlet {
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -18,14 +18,8 @@ public class RoomServlet extends MyServlet {
 		req.setCharacterEncoding("utf-8");
 		String uri=req.getRequestURI();
 		
-		if(uri.indexOf("room.do")!=-1) {
-			forward(req, resp, "/WEB-INF/views/room/room.jsp");
-		}else if(uri.indexOf("rooms.do")!=-1) {
-			forward(req, resp, "/WEB-INF/views/room/rooms.jsp");
-		}else if(uri.indexOf("room3.do")!=-1) {
-			forward(req, resp, "/WEB-INF/views/room/room3.jsp");
-		}else if(uri.indexOf("room1.do")!=-1) {
-			forward(req, resp, "/WEB-INF/views/room/room1.jsp");
+		if(uri.indexOf("insa.do")!=-1) {
+			forward(req, resp, "/WEB-INF/views/insa/insa.jsp");
 		}
 	}
 }

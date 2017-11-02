@@ -76,7 +76,7 @@
 							<li class="dropdown active">
 								<a href="#" class="dropdown-toggle " data-toggle="dropdown" data-hover="dropdown" data-delay="0" data-close-others="false">HOTTIQUE <i class="fa fa-angle-down"></i></a>
 								<ul class="dropdown-menu">
-									<li><a href="index.html">인사말</a></li>
+									<li><a href="<%=cp%>/insa/insa.do">인사말</a></li>
 									<li><a href="index2.html">오시는길</a></li>
 									<li><a href="<%=cp%>/tour/tour.do">주변관광지</a></li>
 								</ul>

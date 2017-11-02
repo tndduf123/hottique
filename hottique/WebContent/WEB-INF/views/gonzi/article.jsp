@@ -65,7 +65,7 @@
 <script type="text/javascript"
 	src="<%=cp%>/resource/jquery/js/jquery-1.12.4.min.js"></script>
 <script type="text/javascript">
-<c:if test="${sessionScope.member.Id=='admin'}">
+<c:if test="${sessionScope.member.id=='admin'}">
 function deleteGonzi(num) {
 	if(confirm("게시물을 삭제 하시겠습니까 ?")) {
 		var url="<%=cp%>/gonzi/delete.do?num="+num;

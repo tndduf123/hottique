@@ -73,7 +73,7 @@ public class GonziServlet extends HttpServlet {
 			updateSubmit(req, resp, pathname);
 		} else if (uri.indexOf("delete.do") != -1) {
 			delete(req, resp, pathname);
-		} else if(uri.indexOf("download.do")!=-1) {
+		} else if (uri.indexOf("download.do") != -1) {
 			download(req, resp, pathname);
 		}
 	}
@@ -197,138 +197,160 @@ public class GonziServlet extends HttpServlet {
 	}
 
 	private void article(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		HttpSession session=req.getSession();
-		SessionInfo info=(SessionInfo)session.getAttribute("member");
-		
-		GonziDAO dao=new GonziDAO();
-		String cp=req.getContextPath();
-		
-		/*if(info==null) {
-			resp.sendRedirect(cp+"/gonzi/list.do");
-			return;
-		}*/
-		int num=Integer.parseInt(req.getParameter("num"));
-		String page=req.getParameter("page");
-		
-		String searchKey=req.getParameter("searchKey");
-		String searchValue=req.getParameter("searchValue");
-		if(searchKey==null) {
-			searchKey="subject";
-			searchValue="";
+		HttpSession session = req.getSession();
+		SessionInfo info = (SessionInfo) session.getAttribute("member");
+
+		GonziDAO dao = new GonziDAO();
+		String cp = req.getContextPath();
+
+		/*
+		 * if(info==null) { resp.sendRedirect(cp+"/gonzi/list.do"); return; }
+		 */
+		int num = Integer.parseInt(req.getParameter("num"));
+		String page = req.getParameter("page");
+
+		String searchKey = req.getParameter("searchKey");
+		String searchValue = req.getParameter("searchValue");
+		if (searchKey == null) {
+			searchKey = "subject";
+			searchValue = "";
 		}
-		
-		searchValue=URLDecoder.decode(searchValue, "utf-8");
-		
+
+		searchValue = URLDecoder.decode(searchValue, "utf-8");
+
 		dao.updateHitCount(num);
-		
-		GonziDTO dto=dao.readGonzi(num);
-		if(dto==null) {
-			resp.sendRedirect(cp+"/gonzi/list.do?page="+page);
+
+		GonziDTO dto = dao.readGonzi(num);
+		if (dto == null) {
+			resp.sendRedirect(cp + "/gonzi/list.do?page=" + page);
 			return;
 		}
-		
+
 		dto.setContent(dto.getContent().replaceAll("\n", "<br>"));
-		
+
 		GonziDTO preReadDto = dao.preReadGonzi(dto.getNum(), searchKey, searchValue);
 		GonziDTO nextReadDto = dao.nextReadGonzi(dto.getNum(), searchKey, searchValue);
-		
-		String query="page="+page;
-		if(searchValue.length()!=0) {
-			query+="&searchKey="+searchKey;
-			query+="&searchValue="+URLEncoder.encode(searchValue, "utf-8");
+
+		String query = "page=" + page;
+		if (searchValue.length() != 0) {
+			query += "&searchKey=" + searchKey;
+			query += "&searchValue=" + URLEncoder.encode(searchValue, "utf-8");
 		}
-		
+
 		req.setAttribute("dto", dto);
 		req.setAttribute("preReadDto", preReadDto);
 		req.setAttribute("nextReadDto", nextReadDto);
 		req.setAttribute("query", query);
 		req.setAttribute("page", page);
-		
-		String path="/WEB-INF/views/gonzi/article.jsp";
+
+		String path = "/WEB-INF/views/gonzi/article.jsp";
 		forward(req, resp, path);
 	}
 
 	private void updateForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		HttpSession session=req.getSession();
-		SessionInfo info=(SessionInfo)session.getAttribute("member");
-		
-		GonziDAO dao=new GonziDAO();
-		String cp=req.getContextPath();
-		
-		String page=req.getParameter("page");
-		int num=Integer.parseInt(req.getParameter("num"));
-		
-		GonziDTO dto=dao.readGonzi(num);
+		HttpSession session = req.getSession();
+		SessionInfo info = (SessionInfo) session.getAttribute("member");
+
+		GonziDAO dao = new GonziDAO();
+		String cp = req.getContextPath();
+
+		String page = req.getParameter("page");
+		int num = Integer.parseInt(req.getParameter("num"));
+
+		GonziDTO dto = dao.readGonzi(num);
 		req.setAttribute("dto", dto);
 		req.setAttribute("page", page);
-		
+
 		req.setAttribute("mode", "update");
-		String path="/WEB-INF/views/gonzi/created.jsp";
+		String path = "/WEB-INF/views/gonzi/created.jsp";
 		forward(req, resp, path);
 	}
+
 	private void updateSubmit(HttpServletRequest req, HttpServletResponse resp, String path)
 			throws ServletException, IOException {
-		HttpSession session=req.getSession();
-		SessionInfo info=(SessionInfo)session.getAttribute("member");
-		
-		GonziDAO dao=new GonziDAO();
-		GonziDTO dto=new GonziDTO();
-		String cp=req.getContextPath();
-		
-		String encType="utf-8";
-		int maxFilesize=20*1024*1024;
-		MultipartRequest mreq=null;
-		mreq=new MultipartRequest(req, pathname, maxFilesize, encType, new DefaultFileRenamePolicy());
+		HttpSession session = req.getSession();
+		SessionInfo info = (SessionInfo) session.getAttribute("member");
 
-			dto.setNum(Integer.parseInt(mreq.getParameter("num")));
-			dto.setSubject(mreq.getParameter("subject"));
-			dto.setContent(mreq.getParameter("content"));
-			dto.setSave(mreq.getParameter("save"));
-			dto.setOriginal(mreq.getParameter("original"));
-			if(mreq.getFile("upload")!=null) {
-				if(dto.getSave().length()!=0) {
+		GonziDAO dao = new GonziDAO();
+		GonziDTO dto = new GonziDTO();
+		String cp = req.getContextPath();
+
+		String encType = "utf-8";
+		int maxFilesize = 20 * 1024 * 1024;
+		MultipartRequest mreq = null;
+		mreq = new MultipartRequest(req, pathname, maxFilesize, encType, new DefaultFileRenamePolicy());
+
+		dto.setNum(Integer.parseInt(mreq.getParameter("num")));
+		dto.setSubject(mreq.getParameter("subject"));
+		dto.setContent(mreq.getParameter("content"));
+		dto.setSave(mreq.getParameter("save"));
+		dto.setOriginal(mreq.getParameter("original"));
+		if (mreq.getFile("upload") != null) {
+			if (dto.getSave().length() != 0) {
 				FileManager.doFiledelete(pathname, dto.getSave());
-				}
-		    	dto.setSave(mreq.getFilesystemName("upload"));
-		    	dto.setOriginal(mreq.getOriginalFileName("upload"));
 			}
-			String page=mreq.getParameter("page");
-			dao.updateNotice(dto);
-			
-			resp.sendRedirect(cp+"/gonzi/list.do?page="+page);
+			dto.setSave(mreq.getFilesystemName("upload"));
+			dto.setOriginal(mreq.getOriginalFileName("upload"));
 		}
-		
+		String page = mreq.getParameter("page");
+		dao.updateNotice(dto);
+
+		resp.sendRedirect(cp + "/gonzi/list.do?page=" + page);
+	}
+
 	private void delete(HttpServletRequest req, HttpServletResponse resp, String path)
 			throws ServletException, IOException {
+		HttpSession session = req.getSession();
+		SessionInfo info = (SessionInfo) session.getAttribute("member");
 
+		GonziDAO dao = new GonziDAO();
+		String cp = req.getContextPath();
+
+		int num = Integer.parseInt(req.getParameter("num"));
+		String page = req.getParameter("page");
+
+		GonziDTO dto = dao.readGonzi(num);
+		if (dto == null) {
+			resp.sendRedirect(cp + "/Gonzi/list.do?page=" + page);
+			return;
+		}
+
+		if (!info.getId().equals(dto.getId()) && !info.getId().equals("admin")) {
+			resp.sendRedirect(cp + "/gonzi/list.do?page=" + page);
+			return;
+		}
+		if (dto.getSave() != null && dto.getSave().length() != 0)
+			FileManager.doFiledelete(pathname, dto.getSave());
+
+		dao.deleteGonzi(num);
+
+		resp.sendRedirect(cp + "/gonzi/list.do?page=" + page);
 	}
 
 	private void download(HttpServletRequest req, HttpServletResponse resp, String path)
 			throws ServletException, IOException {
-		HttpSession session=req.getSession();
-		SessionInfo info=(SessionInfo)session.getAttribute("member");
-		
-		GonziDAO dao=new GonziDAO();
-		String cp=req.getContextPath();
-		
-		int num=Integer.parseInt(req.getParameter("num"));
-		String page=req.getParameter("page");
-		
-		GonziDTO dto=dao.readGonzi(num);
-		if(dto==null) {
-			resp.sendRedirect(cp+"/Gonzi/list.do"+page);
+		HttpSession session = req.getSession();
+		SessionInfo info = (SessionInfo) session.getAttribute("member");
+
+		GonziDAO dao = new GonziDAO();
+		String cp = req.getContextPath();
+
+		int num = Integer.parseInt(req.getParameter("num"));
+		String page = req.getParameter("page");
+
+		GonziDTO dto = dao.readGonzi(num);
+		if (dto == null) {
+			resp.sendRedirect(cp + "/Gonzi/list.do" + page);
 			return;
 		}
-		
-		boolean b = FileManager.doFiledownload(dto.getSave(),
-				dto.getOriginal(), pathname, resp);
-		
-		if(! b) {
+
+		boolean b = FileManager.doFiledownload(dto.getSave(), dto.getOriginal(), pathname, resp);
+
+		if (!b) {
 			resp.setContentType("text/html;charset=utf-8");
-	    	PrintWriter pw=resp.getWriter();
-	    	pw.print("<script>alert('파일다운로드가 실패했습니다. !!!');history.back();</script>");
-	    	return;
+			PrintWriter pw = resp.getWriter();
+			pw.print("<script>alert('파일다운로드가 실패했습니다. !!!');history.back();</script>");
+			return;
 		}
 	}
 }
-	
