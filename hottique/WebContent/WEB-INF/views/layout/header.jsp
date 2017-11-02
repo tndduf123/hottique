@@ -89,7 +89,7 @@
 									<li><a href="<%=cp%>/room/room.do">숭열's Room</a></li>
 									<li><a href="<%=cp%>/room/room3.do">예서's Room</a></li>
 									<li><a href="components.html">지훈's Room</a></li>
-									<li><a href="pricing-box.html">동현's Room</a></li>
+									<li><a href="<%=cp%>/room/room1.do">동현's Room</a></li>
 									<li><a href="pricing-box.html">중혁's Room</a></li>
 										</ul>
 									</li>
@@ -109,6 +109,7 @@
 									<li><a href="<%=cp%>/gonzi/list.do">공지사항</a></li>
 									<li><a href="blog-leftsidebar.html">이벤트</a></li>
 									<li><a href="<%=cp%>/review/list.do">이용후기</a></li>
+									<li><a href="<%=cp%>/bbs/list.do">고객센터</a></li>
 								</ul>
 							</li>
 							
