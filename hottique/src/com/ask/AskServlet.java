@@ -195,10 +195,10 @@ public class AskServlet extends HttpServlet {
 
 	
 	private void article(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		//글보기
+		//게시물 보기
 		String cp = req.getContextPath();
 		AskDAO dao = new AskDAO();
-		MyUtil myUtil = new MyUtil();
+	
 		
 		int num = Integer.parseInt(req.getParameter("num"));
 		String page = req.getParameter("page");
@@ -219,9 +219,31 @@ public class AskServlet extends HttpServlet {
 		AskDTO dto = dao.readAsk(num);
 		if(dto==null) { //게시물이 없으면 다시 리스트로
 			resp.sendRedirect(cp+"Ask/list.do?page="+page);
-			
+			return;
 		}
 		
+		dto.setContent(dto.getContent().replaceAll("\n", "<br>"));
+		
+		//이전글, 다음글
+		AskDTO preReadAsk = dao.preReadAsk(dto.getGroupNum(), dto.getOrderNo(), searchKey, searchValue);
+		AskDTO nextReadAsk = dao.nextReadAsk(dto.getGroupNum(), dto.getOrderNo(), searchKey, searchValue);
+		
+		//리스트나 이전글, 다음글에서 사용할 파라미터
+		String query ="page=" + page;
+		if(searchValue.length()!=0) {
+				query+="&searchKey=" +searchKey + "&searchValue=" +URLEncoder.encode(searchValue, "utf-8");
+		}
+		
+		//JSP로 전달할 속성
+		req.setAttribute("dto", dto);
+		req.setAttribute("page", page);
+		req.setAttribute("query", query);
+		req.setAttribute("preReadDto", preReadAsk);
+		req.setAttribute("nextReadDto", nextReadAsk);
+		
+		// 포워딩
+		String path="/WEB-INF/views/Ask/article.jsp";
+		forward(req, resp, path);
 	}
 	
 	private void updateForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException{

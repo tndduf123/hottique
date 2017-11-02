@@ -99,7 +99,7 @@
 							<li class="dropdown"><a href="#" class="dropdown-toggle " data-toggle="dropdown" data-hover="dropdown" data-delay="0" data-close-others="false">RESERVATION <i class="fa fa-angle-down"></i></a>
 								<ul class="dropdown-menu">
 									<li><a href="<%=cp%>/reservation/guide.do">예약안내</a></li>
-									<li><a href="blog-leftsidebar.html">예약문의</a></li>
+									<li><a href="<%=cp%>/ask/list.do">예약문의</a></li>
 									<li><a href="post-rightsidebar.html">예약신청</a></li>
 								</ul>
 							</li>
