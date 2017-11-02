@@ -100,7 +100,7 @@
 								<ul class="dropdown-menu">
 									<li><a href="<%=cp%>/reservation/guide.do">예약안내</a></li>
 									<li><a href="<%=cp%>/ask/list.do">예약문의</a></li>
-									<li><a href="post-rightsidebar.html">예약신청</a></li>
+									<li><a href="<%=cp%>/app/applist.do">예약신청</a></li>
 								</ul>
 							</li>
 							
