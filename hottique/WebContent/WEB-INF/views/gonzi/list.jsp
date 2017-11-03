@@ -157,10 +157,12 @@ function searchList() {
 							<span class="glyphicon glyphicon-search"></span> 검색
 						</button>
 						<div style="float: right;">
-						<button type="button" class="btn btn-primary btn-sm bbtn"
-							onclick="javascript:location.href='<%=cp%>/gonzi/created.do';">
-							<span class="glyphicon glyphicon glyphicon-pencil"></span> 글쓰기
-						</button>
+						<c:if test="${sessionScope.member.id=='admin' }">
+						   <button type="button" class="btn btn-primary btn-sm bbtn"
+							    onclick="javascript:location.href='<%=cp%>/gonzi/created.do';">
+							    <span class="glyphicon glyphicon glyphicon-pencil"></span> 글쓰기
+						    </button>
+						</c:if>
 						</div>
 					</form>
 				</div>
